@@ -7,17 +7,19 @@ import type { ProductionComponent } from "../data/Components"
 
 export class ProductionSystem implements SimulationSystem {
     private componentAPI: ComponentAPI;
+    private resourceAPI: ResourceAPI;
 
     constructor(
-        componentAPI: ComponentAPI
+        componentAPI: ComponentAPI,
+        resourceAPI : ResourceAPI
     ) {
         this.componentAPI = componentAPI;
+        this.resourceAPI = resourceAPI;
     }
 
     update(
         state: GameState,
         deltaTime: number,
-        resourceAPI: ResourceAPI
     ): void {
         for (const entityId in state.entities) {
             const entity = state.entities[entityId];
@@ -34,7 +36,7 @@ export class ProductionSystem implements SimulationSystem {
             const resource = production.resource;
             const rate = production.rate;
 
-            resourceAPI.add(
+            this.resourceAPI.add(
                 state,
                 resource,
                 rate * deltaTime

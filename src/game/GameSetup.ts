@@ -1,6 +1,7 @@
 import { Engine } from "../engine/core/Engine";
 import type { GameState } from "../engine/core/GameState";
 import { Simulation } from "../engine/core/Simulation";
+import { Clock } from "../engine/core/Clock";
 import { ResourceAPI } from "../engine/api/ResourceAPI";
 import { ProductionSystem } from "../engine/systems/ProductionSystem";
 import { EntityAPI } from "../engine/api/EntityAPI";
@@ -28,14 +29,12 @@ export function createGame(): Engine {
 
     const resourceAPI = new ResourceAPI();
     const componentAPI = new ComponentAPI();
-    const productionSystem = new ProductionSystem(componentAPI);
-    const simulation = new Simulation(
-        productionSystem,
-        resourceAPI
-    );
+    const productionSystem = new ProductionSystem(componentAPI, resourceAPI);
+    const simulation = new Simulation([productionSystem]);
+    const clock = new Clock(simulation);
 
     return new Engine(
         state,
-        simulation
+        clock
     );
 }

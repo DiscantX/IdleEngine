@@ -1,28 +1,16 @@
 import type { GameState } from "./GameState";
-import { Simulation } from "./Simulation";
-
+import { Clock } from "./Clock";
 
 export class Engine {
-
     public state: GameState;
+    private clock: Clock;
 
-    private simulation: Simulation;
-
-
-    constructor(
-        state: GameState,
-        simulation: Simulation
-    ) {
+    constructor(state: GameState, clock: Clock) {
         this.state = state;
-        this.simulation = simulation;
+        this.clock = clock;
     }
 
-
     tick(seconds: number): void {
-
-        this.simulation.update(
-            this.state,
-            seconds
-        );
+        this.clock.advance(this.state, seconds);
     }
 }

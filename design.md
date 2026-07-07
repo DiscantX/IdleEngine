@@ -91,6 +91,12 @@ over hardcoded logic.
 
 ---
 
+## Instructions
+
+I'm learning TypeScript as I go, so please act as both co-coder and instructor: explain concepts, give precise file/directory names and exact locations for edits, and let me write the code myself rather than generating full files for me. Go one step at a time and check my work before moving on.
+
+---
+
 ## Everything Goes Through APIs
 
 Systems should not directly manipulate arbitrary state.

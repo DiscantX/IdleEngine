@@ -1,10 +1,13 @@
 import { createGame } from "./game/GameSetup";
 
+const gameA = createGame();
+const gameB = createGame();
 
-const game = createGame();
+gameA.tick(100);
 
+for (let i = 0; i < 10; i++ ){
+    gameB.tick(10);
+}
 
-game.tick(10);
-
-
-console.log(game.state);
+console.log(gameA.state);
+console.log(gameB.state);

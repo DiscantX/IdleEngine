@@ -1,17 +1,13 @@
 import type { GameState } from "./GameState";
 import type { SimulationSystem } from "./SimulationSystem";
-import { ResourceAPI } from "../api/ResourceAPI";
 
 export class Simulation {
     private systems: SimulationSystem[]
-    private resourceAPI: ResourceAPI;
 
     constructor(
-        systems: SimulationSystem,
-        resourceAPI: ResourceAPI
+        systems: SimulationSystem[],
     ) {
         this.systems = systems;
-        this.resourceAPI = resourceAPI;
     }
 
     update(
