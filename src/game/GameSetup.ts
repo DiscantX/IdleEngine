@@ -8,7 +8,13 @@ import { EntityAPI } from "../engine/api/EntityAPI";
 import { goldMine } from "./definitions/buildings";
 import { ComponentAPI } from "../engine/api/ComponentAPI";
 import { LocalTimeSource } from "../engine/core/LocalTimeSource";
+import { BigNumber } from "../engine/values/BigNumber"
 
+/**
+ * Builds a fully wired game instance: initial state, entities,
+ * systems, and the clock that drives simulation.
+ * @returns A ready-to-use Engine instance.
+ */
 export function createGame(): Engine {
 
     const entityAPI = new EntityAPI();
@@ -21,7 +27,7 @@ export function createGame(): Engine {
     const state: GameState = {
         time: 0,
         resources: {
-            gold: 0
+            gold: BigNumber.ZERO
         },
         entities: {
             mine_001: mineEntity

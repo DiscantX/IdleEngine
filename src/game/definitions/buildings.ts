@@ -1,9 +1,11 @@
+import { BigNumber } from "../../engine/values/BigNumber"
+
 export const goldMine = {
     id: "goldMine",
     components: {
         production: {
             resource: "gold",
-            rate: 25
+            rate: BigNumber.fromNumber(25)
         }
     }
 };

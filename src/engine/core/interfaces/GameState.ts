@@ -1,10 +1,11 @@
 import type { Entity } from "../../data/interfaces/Entities";
+import type { BigNumber } from "../../values/BigNumber";
 
 export interface GameState {
     time: number;
 
     resources: {
-        [resourceId: string]: number;
+        [resourceId: string]: BigNumber;
     };
 
     entities: {
