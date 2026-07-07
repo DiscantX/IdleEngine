@@ -1,5 +1,5 @@
-import type { GameState } from "./GameState";
-import type { SimulationSystem } from "./SimulationSystem";
+import type { GameState } from "./interfaces/GameState";
+import type { SimulationSystem } from "./interfaces/SimulationSystem";
 
 export class Simulation {
     private systems: SimulationSystem[]

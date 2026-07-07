@@ -1,8 +1,8 @@
-import type { GameState } from "../core/GameState";
-import type { SimulationSystem } from "../core/SimulationSystem"
+import type { GameState } from "../core/interfaces/GameState";
+import type { SimulationSystem } from "../core/interfaces/SimulationSystem"
 import { ResourceAPI } from "../api/ResourceAPI";
 import { ComponentAPI } from "../api/ComponentAPI";
-import type { ProductionComponent } from "../data/Components"
+import type { ProductionComponent } from "../data/interfaces/Components"
 
 
 export class ProductionSystem implements SimulationSystem {

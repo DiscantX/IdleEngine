@@ -1,4 +1,4 @@
-import type { Entity } from "../data/Entities";
+import type { Entity } from "../../data/interfaces/Entities";
 
 export interface GameState {
     time: number;

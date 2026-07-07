@@ -1,4 +1,4 @@
-import type { GameState } from "./GameState";
+import type { GameState } from "./interfaces/GameState";
 import { Clock } from "./Clock";
 
 export class Engine {

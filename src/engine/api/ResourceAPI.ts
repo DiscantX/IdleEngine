@@ -1,4 +1,4 @@
-import type { GameState } from "../core/GameState";
+import type { GameState } from "../core/interfaces/GameState";
 
 export class ResourceAPI {
 

@@ -1,5 +1,5 @@
 import { Engine } from "../engine/core/Engine";
-import type { GameState } from "../engine/core/GameState";
+import type { GameState } from "../engine/core/interfaces/GameState";
 import { Simulation } from "../engine/core/Simulation";
 import { Clock } from "../engine/core/Clock";
 import { ResourceAPI } from "../engine/api/ResourceAPI";

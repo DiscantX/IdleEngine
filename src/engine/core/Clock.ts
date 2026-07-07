@@ -1,5 +1,5 @@
-import type { GameState } from "./GameState";
-import type { TimeSource } from "./TimeSource";
+import type { GameState } from "./interfaces/GameState";
+import type { TimeSource } from "./interfaces/TimeSource";
 import { Simulation } from "./Simulation";
 
 export class Clock {
