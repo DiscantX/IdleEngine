@@ -7,6 +7,7 @@ import { ProductionSystem } from "../engine/systems/ProductionSystem";
 import { EntityAPI } from "../engine/api/EntityAPI";
 import { goldMine } from "./definitions/buildings";
 import { ComponentAPI } from "../engine/api/ComponentAPI";
+import { LocalTimeSource } from "../engine/core/LocalTimeSource";
 
 export function createGame(): Engine {
 
@@ -31,7 +32,8 @@ export function createGame(): Engine {
     const componentAPI = new ComponentAPI();
     const productionSystem = new ProductionSystem(componentAPI, resourceAPI);
     const simulation = new Simulation([productionSystem]);
-    const clock = new Clock(simulation);
+    const localTimeSource = new LocalTimeSource();
+    const clock = new Clock(simulation, localTimeSource);
 
     return new Engine(
         state,

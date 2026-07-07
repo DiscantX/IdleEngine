@@ -13,4 +13,7 @@ export class Engine {
     tick(seconds: number): void {
         this.clock.advance(this.state, seconds);
     }
+    loadOffline(maxElapsedSeconds: number = Infinity): void{
+        this.clock.advanceOffline(this.state, maxElapsedSeconds);
+    }
 }
