@@ -17,3 +17,14 @@ const gameC = createGame();
 await new Promise(resolve => setTimeout(resolve, 2000)); //wait 2 seconds
 gameC.loadOffline(1.1);
 console.log(gameC.state);
+
+// Game D: Save GameData
+const gameD = createGame();
+gameD.tick(10000)
+gameD.save();
+console.log(gameD.state);
+
+// Game E: Load GameData
+const gameE = createGame();
+gameE.load();
+console.log(gameE.state);
