@@ -15,3 +15,13 @@ export const goldMine = {
         }
     }
 };
+
+export const goldVault = {
+    id: "goldVault",
+    components: {
+        decay: {
+            resource: "gold",
+            rate: BigNumber.fromNumber(5)
+        }
+    }
+};

@@ -5,7 +5,6 @@ import { Clock } from "../engine/core/Clock";
 import { ResourceAPI } from "../engine/api/ResourceAPI";
 import { ProductionSystem } from "../engine/systems/ProductionSystem";
 import { EntityAPI } from "../engine/api/EntityAPI";
-import { goldMine } from "./definitions/buildings";
 import { ComponentAPI } from "../engine/api/ComponentAPI";
 import { LocalTimeSource } from "../engine/core/LocalTimeSource";
 import { BigNumber } from "../engine/values/BigNumber"
@@ -13,6 +12,9 @@ import { Serializer } from "../engine/persistence/Serializer";
 import { SaveEncoder } from "../engine/persistence/SaveEncoder";
 import { LocalStorageAdapter } from "../engine/persistence/LocalStorageAdapter";
 import { SaveManager } from "../engine/persistence/SaveManager";
+import { DecaySystem } from "../engine/systems/DecaySystem";
+
+import { goldMine, goldVault } from "./definitions/buildings";
 
 /**
  * Builds a fully wired game instance: initial state, entities,
@@ -26,22 +28,34 @@ export function createGame(): Engine {
         "mine_001",
         goldMine.components
     )
+    const vaultEntity = entityAPI.create(
+    "vault_001",
+    goldVault.components
+    )
+
     const state: GameState = {
         time: 0,
         resources: {
             gold: BigNumber.ZERO
         },
         entities: {
-            mine_001: mineEntity
+            mine_001: mineEntity,
+            vault_001: vaultEntity
         }
     };
-    
+
     // Wire up the simulation: systems, the Simulation that runs them,
     // and the Clock that advances state over time.
     const resourceAPI = new ResourceAPI();
     const componentAPI = new ComponentAPI();
     const productionSystem = new ProductionSystem(componentAPI, resourceAPI);
-    const simulation = new Simulation([productionSystem]);
+    const decaySystem = new DecaySystem(componentAPI, resourceAPI);
+    const simulation = new Simulation([
+        productionSystem,
+        decaySystem
+        ]
+    );
+
     const localTimeSource = new LocalTimeSource();
     const clock = new Clock(simulation, localTimeSource);
 

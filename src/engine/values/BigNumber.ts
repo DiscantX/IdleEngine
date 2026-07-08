@@ -158,6 +158,24 @@ export class BigNumber {
        return this.greaterThan(other) || this.equals(other) ;
     }
 
+    /**
+     * Returns the smaller of this BigNumber and another.
+     * @param other - The BigNumber to compare against.
+     * @returns This BigNumber, or other, whichever is smaller.
+     */
+    min(other: BigNumber): BigNumber {
+        return this.lessThanOrEqual(other) ? this : other;
+    }
+
+    /**
+     * Returns the larger of this BigNumber and another.
+     * @param other - The BigNumber to compare against.
+     * @returns This BigNumber, or other, whichever is larger.
+     */
+    max(other: BigNumber): BigNumber {
+        return this.greaterThanOrEqual(other) ? this : other;
+    }
+
 /* 
     ====================== 
     Arithmetic operators

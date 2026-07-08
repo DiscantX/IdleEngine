@@ -41,3 +41,9 @@ console.log(gameD.state);
 const gameE = createGame();
 gameE.load();
 console.log(gameE.state);
+
+// Game F: production (25/sec) and decay (5/sec) both act on gold in
+// the same tick; net should be +20/sec, verifying multi-system ordering.
+const gameF = createGame();
+gameF.tick(10);
+console.log(gameF.state);
