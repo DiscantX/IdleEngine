@@ -5,6 +5,5 @@ import type { BigNumber } from "./BigNumber";
  * that scales — such as upgrade costs or effect magnitudes — without
  * hardcoding the scaling curve into the engine.
  * @param level - The level to compute the value for.
- * @returns The computed value at that level.
- */
-export type Formula = (level: number) => BigNumber;
+ * @returns The computed value at that level, as either a plain number or a BigNumber. */
+export type Formula = (level: number) => number | BigNumber;

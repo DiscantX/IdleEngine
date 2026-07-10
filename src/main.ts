@@ -50,11 +50,12 @@ import { Value } from "./engine/values/Value"
 // gameF.tick(10);
 // console.log(gameF.state);
 
-const valueL0 = Value.constant(new BigNumber(3.14, 1)).resolve()
-const valueL1 = Value.constant(new BigNumber(3.14, 1)).resolve(5)
-const formula = (level: number): BigNumber => {
-    const growth = BigNumber.fromNumber(1.15 ** level);
-    return BigNumber.fromNumber(10).multiply(growth);
+const valueL0 = Value.constant(31.4).resolve()
+const valueL1 = Value.constant(31.4).resolve(5)
+const formula = (level: number): number => {
+    const baseMultiplier = 10
+    const growth = 1.15 ** level;
+    return baseMultiplier * growth;
 }
 const formulaV1 = Value.fromFormula(formula).resolve(0);
 const formulaV2 = Value.fromFormula(formula).resolve(5);

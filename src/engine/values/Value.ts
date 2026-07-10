@@ -32,8 +32,9 @@ export class Value {
      * @param value - The fixed amount.
      * @returns A new constant Value.
      */
-    static constant(value: BigNumber): Value {
-        return new Value ({ kind: "constant", value });
+    static constant(value: number | BigNumber): Value {
+        value = BigNumber.from(value);
+        return new Value({ kind: "constant", value });
     }
 
     /**
@@ -56,7 +57,7 @@ export class Value {
             case "constant":
                 return this.source.value;
             case "formula":
-                return this.source.formula(level);
+                return BigNumber.from(this.source.formula(level));
         }
     }
 }   

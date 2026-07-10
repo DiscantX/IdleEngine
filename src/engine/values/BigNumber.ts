@@ -97,6 +97,19 @@ export class BigNumber {
         return `${this.mantissa}e${this.exponent}`
     }
 
+    /**
+     * Converts a number to BigNumber. If number is already a 
+     * BigNumber, no conversion is needed.
+     * @param value - Either a regular JavaScript number, or a BigNumber
+     * @returns BigNumber represenation of the number passed in.
+     */
+    static from(value: number | BigNumber): BigNumber {
+        if (value instanceof BigNumber){
+            return value;
+        }
+        return BigNumber.fromNumber(value);
+    }
+
 /* 
     ====================== 
     Equality operators
