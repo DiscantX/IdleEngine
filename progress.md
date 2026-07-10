@@ -25,4 +25,16 @@
 - Save migrations (Migration.ts) are deferred; SaveData.version exists and is stamped on every save, giving future migration logic something to key off, but no migration logic has been written yet.
 - SaveEncoder's checksum is a non-cryptographic djb2 hash for corruption/tamper *detection* only, not prevention (a determined player can still recompute a valid checksum for edited data, since there's no secret key). True cryptographic hashing (e.g. Web Crypto SHA-256) was considered but deferred, since it would require making the save pipeline asynchronous and wouldn't add tamper-prevention anyway without server-side verification.
 - Isolated runtime testing of DecaySystem's clamp-at-zero behavior was deferred, since createGame() doesn't currently support custom starting state/entities for testing. The clamp logic was verified by code review and by the production+decay net-rate test. A proper test suite (with the ability to construct custom test states) is planned as a future slice.
-- number | BigNumber ergonomics currently only apply to Value/Formula (the two points a game dev supplies a number today). Component fields like ProductionComponent.rate and DecayComponent.rate are not yet Value-backed and still require explicit
+- number | BigNumber ergonomics currently only apply to Value/Formula (the two points a game dev supplies a number today). Component fields like ProductionComponent.rate and DecayComponent.rate are not yet Value-backed and still require explicit BigNumber construction in game definitions (e.g. buildings.ts) — deferred until Slice 9 introduces Definitions/Upgrades and those fields have a reason to become Value-typed.
+
+## Open items
+
+- Migration
+- EventSystem, FormulaSystem, ModifierSystem
+- QueryAPI, GameAPI
+- Definitions, Upgrades
+- Test suite (including support for constructing custom test states)
+
+## Next focus
+
+- Slice 9: Definitions, Upgrades, and ModifierSystem, built on top of the Formula/Value foundation from Slice 8. Modifiers are planned to be live-resolved each tick (recomputing effective values from registered modifiers) rather than mutating components at purchase time, keeping state clean and modifiers reversible.
