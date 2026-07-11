@@ -1,31 +1,39 @@
+import { Clock } from "./Clock";
 import type { GameState } from "./interfaces/GameState";
 import type { SaveManager } from "../persistence/SaveManager";
 import type { UpgradeAPI } from "../api/UpgradeAPI";
-import type { UpgradeDefinition } from "../data/Definitions";
-import { Clock } from "./Clock";
+import type { ProducerAPI } from "../api/ProducerAPI";
+import type { ProducerDefinition, UpgradeDefinition } from "../data/Definitions";
 
 /**
- * The main entry point for driving a game instance: holds the live
- * GameState and delegates ticking, offline progress, and save/load
- * to the Clock and SaveManager it's constructed with.
+ * The session-level facade for a running game instance. Binds a live
+ * GameState to a fixed set of engine services (ie. Clock, SaveManager,
+ * and content-purchase APIs) constructed alongside it, so calling
+ * code can act on "the current game" through short, stateless-looking
+ * calls instead of threading GameState through every API call by
+ * hand. Each public method delegates to the relevant injected
+ * service — Engine owns no simulation or persistence logic itself.
  */
 export class Engine {
     public state: GameState;
     private clock: Clock;
     private saveManager: SaveManager;
     private upgradeAPI: UpgradeAPI;
+    private producerAPI: ProducerAPI;
 
-    /**
+/**
      * @param state - The initial GameState to run the simulation on.
      * @param clock - Drives simulation advancement, online and offline.
      * @param saveManager - Handles persisting and restoring GameState.
      * @param upgradeAPI - The interface for reading upgrade levels and processing upgrade purchases.
+     * @param producerAPI - The interface for reading producer quantities and processing producer purchases.
      */
-    constructor(state: GameState, clock: Clock, saveManager: SaveManager, upgradeAPI: UpgradeAPI) {
+    constructor(state: GameState, clock: Clock, saveManager: SaveManager, upgradeAPI: UpgradeAPI, producerAPI: ProducerAPI) {
         this.state = state;
         this.clock = clock;
         this.saveManager = saveManager;
         this.upgradeAPI = upgradeAPI;
+        this.producerAPI = producerAPI;
     }
 
     /**
@@ -69,7 +77,16 @@ export class Engine {
      * @param definition - The UpgradeDefinition to be purchased.
      * @returns Boolean representing the success of the transaction.
      */
-    purchase(definition: UpgradeDefinition): boolean {
+    purchaseUpgrade(definition: UpgradeDefinition): boolean {
        return this.upgradeAPI.purchase(this.state, definition);
+   }
+
+    /**
+     * Purchases a producer.
+     * @param definition - The ProducerDefinition to be purchased.
+     * @returns Boolean representing the success of the transaction.
+     */
+    purchaseProducer(definition: ProducerDefinition): boolean {
+       return this.producerAPI.purchase(this.state, definition);
    }
 }
