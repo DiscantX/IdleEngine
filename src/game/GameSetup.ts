@@ -4,8 +4,6 @@ import { Clock } from "../engine/core/Clock";
 import { LocalTimeSource } from "../engine/core/LocalTimeSource";
 import type { GameState } from "../engine/core/interfaces/GameState";
 
-import type { ProducerDefinition } from "../engine/data/Definitions";
-
 import { Serializer } from "../engine/persistence/Serializer";
 import { SaveEncoder } from "../engine/persistence/SaveEncoder";
 import { LocalStorageAdapter } from "../engine/persistence/LocalStorageAdapter";
@@ -18,6 +16,8 @@ import { ProducerAPI } from "../engine/api/ProducerAPI";
 
 import { ProductionSystem } from "../engine/systems/ProductionSystem";
 import { ModifierSystem } from "../engine/systems/ModifierSystem";
+
+import { allProducers, allUpgrades } from "./definitions/registry";
 
 /**
  * Builds a fully wired game instance: initial state, entities,
@@ -42,8 +42,9 @@ export function createGame(): Engine {
 
     const upgradeAPI = new UpgradeAPI(resourceAPI);
     const producerAPI = new ProducerAPI(resourceAPI);
-    const producerDefinitions: ProducerDefinition[] = []; //TODO: Fill array
-    const modifierSystem = new ModifierSystem([], upgradeAPI) //TODO: Fill array
+    const producerDefinitions = allProducers;
+    const upgradeDefinitions = allUpgrades;
+    const modifierSystem = new ModifierSystem(upgradeDefinitions, upgradeAPI);
     const productionSystem = new ProductionSystem(componentAPI, resourceAPI, modifierSystem, producerDefinitions, producerAPI);
     const simulation = new Simulation([
         productionSystem,
