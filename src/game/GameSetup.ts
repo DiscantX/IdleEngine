@@ -4,6 +4,8 @@ import { Clock } from "../engine/core/Clock";
 import { LocalTimeSource } from "../engine/core/LocalTimeSource";
 import type { GameState } from "../engine/core/interfaces/GameState";
 
+import type { ProducerDefinition } from "../engine/data/Definitions";
+
 import { Serializer } from "../engine/persistence/Serializer";
 import { SaveEncoder } from "../engine/persistence/SaveEncoder";
 import { LocalStorageAdapter } from "../engine/persistence/LocalStorageAdapter";
@@ -13,6 +15,7 @@ import { ResourceAPI } from "../engine/api/ResourceAPI";
 import { EntityAPI } from "../engine/api/EntityAPI";
 import { ComponentAPI } from "../engine/api/ComponentAPI";
 import { UpgradeAPI } from "../engine/api/UpgradeAPI";
+import { ProducerAPI } from "../engine/api/ProducerAPI";
 
 import { BigNumber } from "../engine/values/BigNumber"
 
@@ -49,7 +52,8 @@ export function createGame(): Engine {
             mine_001: mineEntity,
             vault_001: vaultEntity
         },
-        upgrades: {}
+        upgrades: {},
+        producers: {}
     };
 
     // Wire up the simulation: systems, the Simulation that runs them,
@@ -58,8 +62,10 @@ export function createGame(): Engine {
     const componentAPI = new ComponentAPI();
 
     const upgradeAPI = new UpgradeAPI(resourceAPI);
+    const producerAPI = new ProducerAPI(resourceAPI);
+    const producerDefinitions: ProducerDefinition[] = []; //TODO: Fill array
     const modifierSystem = new ModifierSystem([miningSpeed], upgradeAPI)
-    const productionSystem = new ProductionSystem(componentAPI, resourceAPI, modifierSystem);
+    const productionSystem = new ProductionSystem(componentAPI, resourceAPI, modifierSystem, producerDefinitions, producerAPI);
     const decaySystem = new DecaySystem(componentAPI, resourceAPI, modifierSystem);
     const simulation = new Simulation([
         productionSystem,

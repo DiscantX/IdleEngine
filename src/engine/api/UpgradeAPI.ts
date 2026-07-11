@@ -1,7 +1,7 @@
 import type { GameState } from "../core/interfaces/GameState";
 import type { UpgradeDefinition } from "../data/Definitions";
-import type { BigNumber } from "../values/BigNumber";
 import { ResourceAPI } from "./ResourceAPI";
+import { evaluatePurchase } from "./Purchasing";
 
 /**
  * Responsible for reading upgrade levels and processing purchases against a game's UpgradeDefinitions,
@@ -24,38 +24,6 @@ export class UpgradeAPI {
         return state.upgrades[upgradeId] ?? 0;
     }
 
-    /**
-     * Resolves every cost for an upgrade at its current level and checks
-     * whether all preconditions for purchase are met (not maxed out, and
-     * every cost affordable). Shared by canPurchase() and purchase() so
-     * the check logic exists in exactly one place, while purchase() can
-     * still reuse the resolved amounts for deduction without resolving
-     * each Value a second time.
-     * @param state - The game state to check against.
-     * @param definition - The upgrade to evaluate.
-     * @returns Whether the purchase is currently possible, and the
-     * resolved cost amounts (only meaningful/complete if affordable is true).
-     */
-    private evaluatePurchase(state: GameState, definition: UpgradeDefinition): {affordable: boolean; resolvedCosts: {resource: string; amount: BigNumber}[]} {
-        const currentLevel = this.getLevel(state, definition.id);
-
-        if (definition.maxLevel !== undefined && currentLevel >= definition.maxLevel) {
-            return { affordable: false, resolvedCosts: [] };
-        }
-
-        const resolvedCosts: { resource: string; amount: BigNumber }[] = [];
-
-        for (const cost of definition.costs) {
-            const amount = cost.amount.resolve(currentLevel);
-            const balance = this.resourceAPI.get(state, cost.resource);
-            if (balance.lessThan(amount)) {
-                return { affordable: false, resolvedCosts: [] };
-            }
-            resolvedCosts.push({ resource: cost.resource, amount });
-        }
-
-        return { affordable: true, resolvedCosts };
-    }
 
     /**
      * Checks whether an upgrade could currently be purchased — not maxed
@@ -70,7 +38,8 @@ export class UpgradeAPI {
      * @returns True if purchase() would currently succeed.
      */
     canPurchase(state: GameState, definition: UpgradeDefinition): boolean {
-        return this.evaluatePurchase(state, definition).affordable;
+        const currentLevel = this.getLevel(state, definition.id);
+        return evaluatePurchase(state, definition, currentLevel, this.resourceAPI).affordable;
     }
 
     /**
@@ -83,7 +52,8 @@ export class UpgradeAPI {
      * @returns Whether the purchase succeeded.
      */
     purchase(state: GameState, definition: UpgradeDefinition): boolean {
-        const evaluation = this.evaluatePurchase(state, definition);
+        const currentLevel = this.getLevel(state, definition.id);
+        const evaluation = evaluatePurchase(state, definition, currentLevel, this.resourceAPI);
 
         if (!evaluation.affordable) {
             return false;
@@ -93,7 +63,7 @@ export class UpgradeAPI {
             this.resourceAPI.add(state, resolved.resource, resolved.amount.negate());
         }
 
-        state.upgrades[definition.id] = this.getLevel(state, definition.id) + 1;
+        state.upgrades[definition.id] = currentLevel + 1;
         return true;
     }
 }

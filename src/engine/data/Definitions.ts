@@ -44,23 +44,61 @@ export interface ResourceCost {
 }
 
 /**
- * Contract for definitions of upgrades. Requires:
- * - costs (ResourceCost[]): A list of resources and their costs, which are required and will be spent upon purchase of the next upgrade.
- * - maxLevel (number - optional): What the upgrade caps at. When not declared, maxLevel is undefined, and is treated as infinite.
- * - modifiers (ModifierDefinition[]): A flat list of modifiers to be applied to the upgrade. Each modifier is applied to every upgrade level.
+ * Shared contract for content that can be acquired by spending
+ * resources: upgrades, producers, and (now) entity-spawning content.
+ * Consumed by the standalone purchase-evaluation logic, which checks
+ * affordability and cap status identically regardless of what kind
+ * of content is being purchased or what acquiring it actually does.
  */
-export interface UpgradeDefinition extends Definition {
+export interface Purchasable {
+    /** A list of resources and their costs, required and spent upon each acquisition. */
     costs: ResourceCost[];
-    maxLevel?: number;
+    /**
+     * The maximum number of times this content can be acquired.
+     * When not declared, maxCount is undefined, and is treated as infinite.
+     */
+    maxCount?: number;
+}
+
+/**
+ * Contract for definitions of upgrades. Requires:
+ * - modifiers (ModifierDefinition[]): A flat list of modifiers to be applied to the upgrade. Each modifier is applied to every upgrade level.
+ *
+ * costs and maxCount (the cap on levels purchasable) come from Purchasable.
+ */
+export interface UpgradeDefinition extends Definition, Purchasable {
     modifiers: ModifierDefinition[];
 }
 
 /**
- * Contract for definitions of buildings/entities placeable in the game world. Requires:
- * - components ([componentType:string]) - A bag of components (keyed by component type, e.g. production or decay) this building's entities are created with.
+ * Contract for definitions of entities placeable in the game world.
+ * Unlike UpgradeDefinition/ProducerDefinition, each acquisition spawns
+ * a distinct Entity in GameState.entities — entities have individual
+ * ("qualitative") identity, so owning several is represented as
+ * multiple separate entities, not a shared count.
+ * - components ([componentType:string]) - A bag of components (keyed by component type, e.g. production or decay) this entity's instances are created with.
+ *
+ * costs and maxCount (the cap on entities purchasable from this definition) come from Purchasable.
  */
-export interface BuildingDefinition extends Definition {
+export interface EntityDefinition extends Definition, Purchasable {
     components: {
         [componentType: string]: object;
     };
+}
+
+/**
+ * Contract for definitions of producers: purchasable, quantity-based
+ * content that generates a resource over time. Unlike EntityDefinition,
+ * producers have no individual identity — owning several is represented
+ * as a single count against this definition, not as separate entities.
+ * - resource (string): The resource this producer generates.
+ * - rate (Value): The amount generated per second, per unit owned.
+ * Scales via Value so rate can grow with quantity owned (e.g. later
+ * units cost more but also produce proportionally more).
+ *
+ * costs and maxCount (the cap on units purchasable) come from Purchasable.
+ */
+export interface ProducerDefinition extends Definition, Purchasable {
+    resource: string;
+    rate: Value;
 }

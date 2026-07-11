@@ -3,8 +3,9 @@ import type { BigNumber } from "../../values/BigNumber";
 
 /**
  * The complete, serializable state of a running game: elapsed
- * simulation time, resource amounts, and all entities & upgrades. This is the
- * single object that systems read from and write to each tick.
+ * simulation time, resource amounts, and all entities, upgrades, &
+ * producers. This is the single object that systems read from and
+ * write to each tick.
  */
 export interface GameState {
     /** Total elapsed simulation time, in seconds. */
@@ -28,5 +29,14 @@ export interface GameState {
      */
     upgrades: {
         [upgradeId: string]: number;
+    };
+
+    /**
+     * Count of each producer currently owned, keyed by ProducerDefinition id.
+     * Producers with none owned are not added to GameState, keeping it
+     * sparse; reads default to zero.
+     */
+    producers: {
+        [producerId: string]: number;
     };
 }
