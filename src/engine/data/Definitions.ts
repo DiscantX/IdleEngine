@@ -13,6 +13,19 @@ export interface Definition {
 }
 
 /**
+ * Contract for definitions of resources — the things games produce,
+ * spend, and display (e.g. gold, wood, or a single meta resource like
+ * "Number"). Currently identical to Definition with no additional
+ * fields; declared separately anyway so resources have their own
+ * named type to extend if game-specific display needs (e.g. a unit
+ * suffix, an icon) arise later, consistent with how Upgrade/Entity/
+ * ProducerDefinition are each their own extension of Definition
+ * rather than games reusing Definition directly.
+ */
+export interface ResourceDefinition extends Definition {
+}
+
+/**
  * The type of operation the modifier applies. Must be a string with one of the following values:
  * - "add" — Added directly to the base value.
  * - "multiplyAdditive" — Multiple modifiers of this kind sum together into one combined percentage bonus (e.g. two +10% upgrades → +20% total), applied once at the end. Use this for "stacks additively" bonuses — the common case.
