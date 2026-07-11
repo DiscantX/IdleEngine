@@ -1,4 +1,5 @@
-import { BigNumber } from "../../engine/values/BigNumber"
+import type { BuildingDefinition } from "../../engine/data/Definitions";
+import { BigNumber } from "../../engine/values/BigNumber";
 
 /**
  * A basic production building for the example game: produces gold
@@ -6,8 +7,10 @@ import { BigNumber } from "../../engine/values/BigNumber"
  * Demonstrates the minimal shape of a data-driven entity definition —
  * an id plus a components bag, matching what EntityAPI.create() expects.
  */
-export const goldMine = {
+export const goldMine: BuildingDefinition = {
     id: "goldMine",
+    name: "Gold Mine",
+    description: "A mine full of gold.",
     components: {
         production: {
             resource: "gold",
@@ -16,8 +19,10 @@ export const goldMine = {
     }
 };
 
-export const goldVault = {
+export const goldVault: BuildingDefinition = {
     id: "goldVault",
+    name: "Gold Vault",
+    description: "A vault of gold coins. Warning: Don't try swimming in it, coins are not liquid.",
     components: {
         decay: {
             resource: "gold",

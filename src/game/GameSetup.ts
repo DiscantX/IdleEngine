@@ -1,19 +1,26 @@
 import { Engine } from "../engine/core/Engine";
-import type { GameState } from "../engine/core/interfaces/GameState";
 import { Simulation } from "../engine/core/Simulation";
 import { Clock } from "../engine/core/Clock";
-import { ResourceAPI } from "../engine/api/ResourceAPI";
-import { ProductionSystem } from "../engine/systems/ProductionSystem";
-import { EntityAPI } from "../engine/api/EntityAPI";
-import { ComponentAPI } from "../engine/api/ComponentAPI";
 import { LocalTimeSource } from "../engine/core/LocalTimeSource";
-import { BigNumber } from "../engine/values/BigNumber"
+import type { GameState } from "../engine/core/interfaces/GameState";
+
 import { Serializer } from "../engine/persistence/Serializer";
 import { SaveEncoder } from "../engine/persistence/SaveEncoder";
 import { LocalStorageAdapter } from "../engine/persistence/LocalStorageAdapter";
 import { SaveManager } from "../engine/persistence/SaveManager";
-import { DecaySystem } from "../engine/systems/DecaySystem";
 
+import { ResourceAPI } from "../engine/api/ResourceAPI";
+import { EntityAPI } from "../engine/api/EntityAPI";
+import { ComponentAPI } from "../engine/api/ComponentAPI";
+import { UpgradeAPI } from "../engine/api/UpgradeAPI";
+
+import { BigNumber } from "../engine/values/BigNumber"
+
+import { ProductionSystem } from "../engine/systems/ProductionSystem";
+import { DecaySystem } from "../engine/systems/DecaySystem";
+import { ModifierSystem } from "../engine/systems/ModifierSystem";
+
+import { miningSpeed } from "./definitions/upgrades";
 import { goldMine, goldVault } from "./definitions/buildings";
 
 /**
@@ -41,15 +48,19 @@ export function createGame(): Engine {
         entities: {
             mine_001: mineEntity,
             vault_001: vaultEntity
-        }
+        },
+        upgrades: {}
     };
 
     // Wire up the simulation: systems, the Simulation that runs them,
     // and the Clock that advances state over time.
     const resourceAPI = new ResourceAPI();
     const componentAPI = new ComponentAPI();
-    const productionSystem = new ProductionSystem(componentAPI, resourceAPI);
-    const decaySystem = new DecaySystem(componentAPI, resourceAPI);
+
+    const upgradeAPI = new UpgradeAPI(resourceAPI);
+    const modifierSystem = new ModifierSystem([miningSpeed], upgradeAPI)
+    const productionSystem = new ProductionSystem(componentAPI, resourceAPI, modifierSystem);
+    const decaySystem = new DecaySystem(componentAPI, resourceAPI, modifierSystem);
     const simulation = new Simulation([
         productionSystem,
         decaySystem
@@ -69,6 +80,7 @@ export function createGame(): Engine {
     return new Engine(
         state,
         clock,
-        saveManager
+        saveManager,
+        upgradeAPI
     );
 }

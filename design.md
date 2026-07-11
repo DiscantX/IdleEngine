@@ -120,6 +120,36 @@ EventAPI
 
 ---
 
+---
+
+## Extending Definitions with Game-Specific Metadata
+
+The engine's `Definition` interface (and the types that extend it, like
+`UpgradeDefinition` and `BuildingDefinition`) intentionally stays minimal —
+just the fields every piece of content universally needs (`id`, `name`,
+`description?`).
+
+When a specific game needs additional display or gameplay metadata beyond
+that — icon paths, rarity tiers, sound effect IDs, etc. — the convention is
+to **extend the relevant Definition interface in game code**, the same way
+`UpgradeDefinition extends Definition`:
+
+```typescript
+interface GameUpgradeDefinition extends UpgradeDefinition {
+    icon: string;
+    rarity: "common" | "rare" | "legendary";
+}
+```
+
+This was chosen deliberately over adding a generic `metadata: { [key: string]: string }`
+bag to `Definition` itself. A typed extension gives compile-time safety
+(typos become build errors, not silent runtime bugs) and keeps the engine
+from having to anticipate every possible piece of game-specific metadata —
+consistent with the project's broader preference for typed, structured data
+over open-ended generic containers (see also: the function-based `Formula`
+decision, which rejected a data-driven/tagged-interpreter approach for
+similar reasons).
+
 ## Deterministic Simulation
 
 Given:

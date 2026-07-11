@@ -1,5 +1,7 @@
 import type { GameState } from "./interfaces/GameState";
 import type { SaveManager } from "../persistence/SaveManager";
+import type { UpgradeAPI } from "../api/UpgradeAPI";
+import type { UpgradeDefinition } from "../data/Definitions";
 import { Clock } from "./Clock";
 
 /**
@@ -10,17 +12,20 @@ import { Clock } from "./Clock";
 export class Engine {
     public state: GameState;
     private clock: Clock;
-    private saveManager: SaveManager
+    private saveManager: SaveManager;
+    private upgradeAPI: UpgradeAPI;
 
     /**
      * @param state - The initial GameState to run the simulation on.
      * @param clock - Drives simulation advancement, online and offline.
      * @param saveManager - Handles persisting and restoring GameState.
+     * @param upgradeAPI - The interface for reading upgrade levels and processing upgrade purchases.
      */
-    constructor(state: GameState, clock: Clock, saveManager: SaveManager) {
+    constructor(state: GameState, clock: Clock, saveManager: SaveManager, upgradeAPI: UpgradeAPI) {
         this.state = state;
         this.clock = clock;
         this.saveManager = saveManager;
+        this.upgradeAPI = upgradeAPI;
     }
 
     /**
@@ -58,4 +63,13 @@ export class Engine {
             this.state = loaded;
         }
     }
+
+    /**
+     * Purchases an upgrade.
+     * @param definition - The UpgradeDefinition to be purchased.
+     * @returns Boolean representing the success of the transaction.
+     */
+    purchase(definition: UpgradeDefinition): boolean {
+       return this.upgradeAPI.purchase(this.state, definition);
+   }
 }
