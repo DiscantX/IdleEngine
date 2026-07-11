@@ -12,19 +12,12 @@ import { LocalStorageAdapter } from "../engine/persistence/LocalStorageAdapter";
 import { SaveManager } from "../engine/persistence/SaveManager";
 
 import { ResourceAPI } from "../engine/api/ResourceAPI";
-import { EntityAPI } from "../engine/api/EntityAPI";
 import { ComponentAPI } from "../engine/api/ComponentAPI";
 import { UpgradeAPI } from "../engine/api/UpgradeAPI";
 import { ProducerAPI } from "../engine/api/ProducerAPI";
 
-import { BigNumber } from "../engine/values/BigNumber"
-
 import { ProductionSystem } from "../engine/systems/ProductionSystem";
-import { DecaySystem } from "../engine/systems/DecaySystem";
 import { ModifierSystem } from "../engine/systems/ModifierSystem";
-
-import { miningSpeed } from "./definitions/upgrades";
-import { goldMine, goldVault } from "./definitions/buildings";
 
 /**
  * Builds a fully wired game instance: initial state, entities,
@@ -32,25 +25,11 @@ import { goldMine, goldVault } from "./definitions/buildings";
  * @returns A ready-to-use Engine instance.
  */
 export function createGame(): Engine {
-    // Create the starting entity and initial game state.
-    const entityAPI = new EntityAPI();
-    const mineEntity = entityAPI.create(
-        "mine_001",
-        goldMine.components
-    )
-    const vaultEntity = entityAPI.create(
-    "vault_001",
-    goldVault.components
-    )
-
     const state: GameState = {
         time: 0,
         resources: {
-            gold: BigNumber.ZERO
         },
         entities: {
-            mine_001: mineEntity,
-            vault_001: vaultEntity
         },
         upgrades: {},
         producers: {}
@@ -64,12 +43,10 @@ export function createGame(): Engine {
     const upgradeAPI = new UpgradeAPI(resourceAPI);
     const producerAPI = new ProducerAPI(resourceAPI);
     const producerDefinitions: ProducerDefinition[] = []; //TODO: Fill array
-    const modifierSystem = new ModifierSystem([miningSpeed], upgradeAPI)
+    const modifierSystem = new ModifierSystem([], upgradeAPI) //TODO: Fill array
     const productionSystem = new ProductionSystem(componentAPI, resourceAPI, modifierSystem, producerDefinitions, producerAPI);
-    const decaySystem = new DecaySystem(componentAPI, resourceAPI, modifierSystem);
     const simulation = new Simulation([
         productionSystem,
-        decaySystem
         ]
     );
 
