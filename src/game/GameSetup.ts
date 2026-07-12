@@ -65,6 +65,7 @@ export function createGame(): Engine {
         state,
         clock,
         saveManager,
-        upgradeAPI
+        upgradeAPI,
+        producerAPI
     );
 }
