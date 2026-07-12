@@ -17,7 +17,10 @@ import { ProducerAPI } from "../engine/api/ProducerAPI";
 import { ProductionSystem } from "../engine/systems/ProductionSystem";
 import { ModifierSystem } from "../engine/systems/ModifierSystem";
 
+import { BigNumber } from "../engine/values/BigNumber";
+
 import { allProducers, allUpgrades } from "./definitions/registry";
+import { theNumber } from "./definitions/resources";
 
 /**
  * Builds a fully wired game instance: initial state, entities,
@@ -28,9 +31,9 @@ export function createGame(): Engine {
     const state: GameState = {
         time: 0,
         resources: {
+            [theNumber.id]: BigNumber.fromNumber(10)
         },
-        entities: {
-        },
+        entities: {},
         upgrades: {},
         producers: {}
     };
