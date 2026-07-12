@@ -82,7 +82,7 @@ export class ProductionSystem implements SimulationSystem {
         }
 
         for (const definition of this.producerDefinitions) {
-            const quantity = this.producerAPI.getQuantity(state, definition.id);
+            const quantity = this.producerAPI.getCount(state, definition.id);
 
             if (quantity <= 0) {
                 continue;

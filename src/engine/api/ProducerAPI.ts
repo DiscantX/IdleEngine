@@ -1,7 +1,9 @@
 import type { GameState } from "../core/interfaces/GameState";
 import type { ProducerDefinition } from "../data/Definitions";
+import type { BigNumber } from "../values/BigNumber";
 import { ResourceAPI } from "./ResourceAPI";
-import { evaluatePurchase } from "./Purchasing";
+import { evaluatePurchase, resolveCosts } from "./Purchasing";
+
 
 /**
  * Responsible for reading owned producer quantities and processing
@@ -19,12 +21,12 @@ export class ProducerAPI {
     }
 
     /**
-     * Returns the current owned quantity of a given producer.
+     * Returns the current owned count of a given producer.
      * @param state - GameState object containing the current state of the game.
      * @param producerId - The producer to look up.
-     * @returns The current quantity owned. Returns zero if not defined.
+     * @returns The current count owned. Returns zero if not defined.
      */
-    getQuantity(state: GameState, producerId: string): number {
+    getCount(state: GameState, producerId: string): number {
         return state.producers[producerId] ?? 0;
     }
 
@@ -41,8 +43,8 @@ export class ProducerAPI {
      * @returns True if purchase() would currently succeed.
      */
     canPurchase(state: GameState, definition: ProducerDefinition): boolean {
-        const currentQuantity = this.getQuantity(state, definition.id);
-        return evaluatePurchase(state, definition, currentQuantity, this.resourceAPI).affordable;
+        const currentCount = this.getCount(state, definition.id);
+        return evaluatePurchase(state, definition, currentCount, this.resourceAPI).affordable;
     }
 
     /**
@@ -55,8 +57,8 @@ export class ProducerAPI {
      * @returns Whether the purchase succeeded.
      */
     purchase(state: GameState, definition: ProducerDefinition): boolean {
-        const currentQuantity = this.getQuantity(state, definition.id);
-        const evaluation = evaluatePurchase(state, definition, currentQuantity, this.resourceAPI);
+        const currentCount = this.getCount(state, definition.id);
+        const evaluation = evaluatePurchase(state, definition, currentCount, this.resourceAPI);
 
         if (!evaluation.affordable) {
             return false;
@@ -66,7 +68,20 @@ export class ProducerAPI {
             this.resourceAPI.add(state, resolved.resource, resolved.amount.negate());
         }
 
-        state.producers[definition.id] = currentQuantity + 1;
+        state.producers[definition.id] = currentCount + 1;
         return true;
+    }
+
+    /**
+     * Resolves the cost of the next unit of a producer, regardless of
+     * whether it's currently affordable. Useful for UI code that needs
+     * to display a cost even when the player can't yet afford it.
+     * @param state - The game state to read the current count from.
+     * @param definition - The producer to resolve costs for.
+     * @returns The resolved cost amounts for the next purchase.
+     */
+    getNextCosts(state: GameState, definition: ProducerDefinition): { resource: string; amount: BigNumber }[] {
+        const currentCount = this.getCount(state, definition.id);
+        return resolveCosts(definition, currentCount);
     }
 }

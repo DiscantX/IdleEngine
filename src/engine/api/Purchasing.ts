@@ -4,6 +4,27 @@ import type { BigNumber } from "../values/BigNumber";
 import { ResourceAPI } from "./ResourceAPI";
 
 /**
+ * Resolves every cost for a Purchasable definition at a given count,
+ * without checking affordability. Used both by evaluatePurchase() (to
+ * avoid resolving each Value twice) and by callers — like UI code —
+ * that need to display costs regardless of whether they're currently
+ * affordable, which evaluatePurchase() alone can't provide since it
+ * returns no cost information when affordable is false.
+ * @param definition - The Purchasable content whose costs to resolve.
+ * @param currentCount - The count to resolve each cost's Value against.
+ * @returns The resolved cost amounts, one per entry in definition.costs.
+ */
+export function resolveCosts(
+    definition: Purchasable,
+    currentCount: number
+): { resource: string; amount: BigNumber }[] {
+    return definition.costs.map(cost => ({
+        resource: cost.resource,
+        amount: cost.amount.resolve(currentCount)
+    }));
+}
+
+/**
  * Resolves every cost for a Purchasable definition at its current
  * count and checks whether all preconditions for acquisition are met
  * (not at maxCount, every cost affordable). Generalized, standalone
@@ -18,7 +39,7 @@ import { ResourceAPI } from "./ResourceAPI";
  * is caller-defined; this function only compares it against maxCount).
  * @param resourceAPI - Used to check current resource balances.
  * @returns Whether the purchase is currently possible, and the
- * resolved cost amounts (only meaningful/complete if affordable is true).
+ * fully resolved cost amounts regardless of affordability.
  */
 export function evaluatePurchase(
     state: GameState,
@@ -30,15 +51,13 @@ export function evaluatePurchase(
         return { affordable: false, resolvedCosts: [] };
     }
 
-    const resolvedCosts: { resource: string; amount: BigNumber }[] = [];
+    const resolvedCosts: { resource: string; amount: BigNumber }[] = resolveCosts(definition, currentCount);
 
-    for (const cost of definition.costs) {
-        const amount = cost.amount.resolve(currentCount);
+    for (const cost of resolvedCosts) {
         const balance = resourceAPI.get(state, cost.resource);
-        if (balance.lessThan(amount)) {
-            return { affordable: false, resolvedCosts: [] };
+        if (balance.lessThan(cost.amount)) {
+            return { affordable: false, resolvedCosts: resolvedCosts };
         }
-        resolvedCosts.push({ resource: cost.resource, amount });
     }
 
     return { affordable: true, resolvedCosts };

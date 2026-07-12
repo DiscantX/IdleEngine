@@ -45,7 +45,7 @@ export function setupUI(engine: Engine, container: HTMLElement): UIRefs {
     const producer = allProducers[0];
 
     const quantityEl = document.createElement("div");
-    quantityEl.textContent = `${producer.name}: ${producerAPI.getQuantity(engine.state, producer.id)}`;
+    quantityEl.textContent = `${producer.name}: ${producerAPI.getCount(engine.state, producer.id)}`;
 
     const costEl = document.createElement("div");
     costEl.textContent = "Cost: ...";

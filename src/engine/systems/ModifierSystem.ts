@@ -54,7 +54,7 @@ export class ModifierSystem {
         let compoundFactor = BigNumber.fromNumber(1);
 
         for (const definition of this.definitions) {
-            const level = this.upgradeAPI.getLevel(state, definition.id);
+            const level = this.upgradeAPI.getCount(state, definition.id);
             if (level <= 0) continue;
 
             for (const modifier of definition.modifiers) {
