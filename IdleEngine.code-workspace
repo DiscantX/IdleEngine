@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"name": "IdleEngine",
+			"path": "."
+		},
+		{
+			"name": "engine",
+			"path": "src/engine"
+		},
+		{
+			"name": "game",
+			"path": "src/game"
+		},
+		{
+			"name": "ui",
+			"path": "src/ui"
+		}
+	],
+	"settings": {}
+}

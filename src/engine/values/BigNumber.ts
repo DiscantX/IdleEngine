@@ -110,6 +110,9 @@ export class BigNumber {
         return BigNumber.fromNumber(value);
     }
 
+    get significand(): number { return this.mantissa; }
+    get magnitude(): number { return this.exponent; }
+
 /* 
     ====================== 
     Equality operators
